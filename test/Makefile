@@ -16,7 +16,7 @@ CPPFLAGS := \
     -DSLAB_CANARY=$(CONFIG_SLAB_CANARY) \
     -DCONFIG_EXTENDED_SIZE_CLASSES=$(CONFIG_EXTENDED_SIZE_CLASSES)
 
-SHARED_FLAGS := -O3
+SHARED_FLAGS := -ggdb3 -O0
 
 CFLAGS := -std=c17 $(SHARED_FLAGS) -Wmissing-prototypes
 CXXFLAGS := -std=c++17 -fsized-deallocation $(SHARED_FLAGS)
@@ -74,3 +74,5 @@ all: $(EXECUTABLES)
 clean:
 	rm -f $(EXECUTABLES)
 	rm -fr ./__pycache__
+	rm -f cachegrind.out.* 
+	rm -f callgrind.out.* 
