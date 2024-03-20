@@ -17,7 +17,7 @@ define safe_flag
 $(shell $(CC) $(if $(filter clang%,$(CC)),-Werror=unknown-warning-option) -E $1 - </dev/null >/dev/null 2>&1 && echo $1 || echo $2)
 endef
 
-CPPFLAGS := $(CPPFLAGS) -D_GNU_SOURCE -I include
+CPPFLAGS := $(CPPFLAGS) -D_GNU_SOURCE -DTRACY_ENABLE -I include -I tracy/public/tracy
 SHARED_FLAGS := -pipe -ggdb3 -O0 -flto -fPIC -fvisibility=hidden -fno-plt \
     -fstack-clash-protection $(call safe_flag,-fcf-protection) -fstack-protector-strong \
     -Wall -Wextra $(call safe_flag,-Wcast-align=strict,-Wcast-align) -Wcast-qual -Wwrite-strings \
@@ -111,7 +111,7 @@ CPPFLAGS += \
     -DCONFIG_SELF_INIT=$(CONFIG_SELF_INIT)
 
 $(OUT)/libhardened_malloc$(SUFFIX).so: $(OBJECTS) | $(OUT)
-	$(CC) $(CFLAGS) $(LDFLAGS) -shared $^ $(LDLIBS) -o $@
+	$(CC) $(CXXFLAGS) $(LDFLAGS) -shared $^ $(LDLIBS) -o $@
 
 $(OUT):
 	mkdir -p $(OUT)
@@ -130,6 +130,8 @@ $(OUT)/random.o: random.c random.h chacha.h util.h $(CONFIG_FILE) | $(OUT)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
 $(OUT)/util.o: util.c util.h $(CONFIG_FILE) | $(OUT)
 	$(COMPILE.c) $(OUTPUT_OPTION) $<
+$(OUT)/TracyClient.o: tracy/public/TracyClient.cpp tracy/TracyC.h $(CONFIG_FILE) | $(OUT)
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
 check: tidy
 

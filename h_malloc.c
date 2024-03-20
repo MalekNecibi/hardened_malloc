@@ -20,6 +20,9 @@
 #include "random.h"
 #include "util.h"
 
+//#include "tracy/TracyC.h"
+#include "trace.h"
+
 #ifdef USE_PKEY
 #include <sys/mman.h>
 #endif
@@ -1479,7 +1482,9 @@ static inline void *alloc(size_t size) {
 }
 
 EXPORT void *h_malloc(size_t size) {
+    START_ZONE;
     size = adjust_size_for_canary(size);
+    END_ZONE;
     return alloc(size);
 }
 
